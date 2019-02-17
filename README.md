@@ -3,10 +3,42 @@
 ## FASE 1
 
 En este apartado debemos crear un código que lee el dataset en formato csv debemos realizar las siguientes transformaciones:
+* Ingesta de datos. Esto se realiza en formato csv para lo cual se usa la sentencia:
 
-* Transformar el precio dado en dólarea a euros.
-* Transformar el tamaño del piso dada en pies cuadrados ft<sup>2</sup> a metros cuadrado m<sup>2</sup>
-* Transformar el precio por ft<sup>2</sup>  dado en dolares a euros por m<sup>2</sup>. Aquí hay dos formas de hacerlo volver aplicar 
+```
+
+val datosDS =  spark.read
+            .option("sep", ",")   // Especifico el separador que son comas
+            .option("header", true)   // Que importe la cabecera
+            .option("inferSchema", true)     // Infiere el tipo de dato a partir de la clase
+            .csv(path + fichero + ".csv").as[Piso_ft]   //Tipo de fichero csv y clase Piso para crear el dataSet
+
+```
+
+donde se le indica el tipo de separador el esquema, el fichero de entrada y que tiene que crear un dataSet para lo cuel he creado antes la case class:
+
+``` 
+case class Piso_ft(MLS: Integer,
+                location: String,
+                price: Double,
+                Bedrooms: Integer,
+                Bathrooms: Integer,
+                Size: Double,
+                `Price SQ Ft`: Double,  //al tener espacios en blanco hay que encerrar el nombre entre ``
+                Status: String)
+```
+
+* Transformar el precio dado en dólarea a euros. Aqui hay que realizar todas las conversiones multiplicando por los factores adecuados.
+* Agrupar los datos. Tenemos que agrupar por localizaciones y calcular el valor medio de cada localización. Ahora, como en la fase 2 solo se necesita el valor medio de cada zona  se creará un dataFrame con estos dos campos únicamente.
+
+* Finalmente hay que escribir los datos a disco al directorio *real-state* que tenemos que monitorizar en el siguiente
+apartado. Para lo cual:
+
+ ```
+      ag_location.coalesce(1).write.json(path_salida + fichero + ".json")
+ ```
+ importante el *coalesce(1)* para que lo integre todo en un único fichero.
+
 
 ## FASE 2
 En la fase 1 nos dejaba un json en el directorio Real-estate con la localización y el precio medio en euros por m<sup>2</sup> en cada localización. Aquí tenemos que monitorizar ese directorio para que en el momento que el precio por m<sup>2</sup> supere un cierto límite enviar una alerta.
