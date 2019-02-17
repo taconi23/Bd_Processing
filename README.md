@@ -21,6 +21,16 @@ En la fase 1 nos dejaba un json en el directorio Real-estate con la localizació
       .load("file:///home/kc/Documentos/datasets/real-estate/*")
  
  ```
+ Con esta instrucción se indica que vamos a cargar "json", queremos que incluya la cabecera, le pasamos el esquema que se 
+ obtiene con el código:
+ 
+ ```
+    val schema = new StructType()
+      .add("Location", "string")
+      .add("avg(PriceSQM2)", "double")
+ ```
+ y por último se cargar con la intrucción load pasando el *path*. Debido a que el programa de la fase 1 guarda los ficheros en carpetas  hay que poner el \* al final de todo para que procese los json dentro de subdirectorios.
+ 
  
  
  * Agrupar por localización y metro cuadrado. Aqui se añade una ventana temporal que seguirá la evolución temporal del precio medio 
