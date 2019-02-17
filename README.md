@@ -157,11 +157,21 @@ Batch: 1
   ```
   como podemos ver en la segunda prueba *Arroyo Grande* aparece duplicado y no se ha hecho el promedio temporal ya que está en ventanas diferentes. En cambio en la variable que no contenía el tiempo ha hecho la agrupación y media.
   
-  
-  
-  
-  
+* Realizar la consulta y monitorización de los precios por si alguno se dispara por encima de un valor lo cual se hace con:
 
-  
-  
- * 
+```
+val query2 = windowedData2.coalesce(1).filter(line => line.getDouble(1)>2000).writeStream.outputMode("complete").foreach(new ForeachWriter[Row] {
+      override def open(partitionId: Long, epochId: Long): Boolean = true
+
+      override def process(value: Row): Unit = {
+          println("Alerta " + value.getString(0) + " Valor medio superado:" + value.getDouble(1))
+
+      }
+
+      override def close(errorOrNull: Throwable): Unit = {}
+    }).start
+
+```
+
+Realizo un filtro primero para quedarme con aquellos inmuebles que superen el valor límite y dentro del bloque process  se 
+metería la lógica para el envío de e-mails.
