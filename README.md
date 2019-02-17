@@ -13,6 +13,14 @@ En la fase 1 nos dejaba un json en el directorio Real-estate con la localizació
 
 #### Pasos
  * Indicar el directorio a monitorizar. Esto se consigue con el código:
+ ```
+     val rawData = spark.readStream
+        .format("json")
+      .option("header", true)
+      .schema(schema)
+      .load("file:///home/kc/Documentos/datasets/real-estate/*")
+ 
+ ```
  
  
  * Agrupar por localización y metro cuadrado. Aqui se añade una ventana temporal que seguirá la evolución temporal del precio medio 
